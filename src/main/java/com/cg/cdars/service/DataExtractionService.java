@@ -1,27 +1,24 @@
 package com.cg.cdars.service;
 
-import com.cg.cdars.dao.GenericDao;
-import com.cg.cdars.domain.DataSet.DataSetType;
-import com.cg.cdars.domain.ScriptType;
+import com.cg.cdars.model.DataSetType;
+import com.cg.cdars.model.ScriptType;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.Date;
 import java.util.List;
 
 public interface DataExtractionService {
-    void setConfigurationDao(GenericDao configurationDao);
-
-    List<String> generateSqlStatementsForDataSet(GenericDao dao,
+    List<String> generateSqlStatementsForDataSet(NamedParameterJdbcTemplate jdbc,
                                                  DataSetType dataSetName,
                                                  Date startDate,
                                                  Date endDate,
                                                  ScriptType scriptType) throws Exception;
 
-    List<String> generateSqlStatementsForTable(GenericDao dao,
+    List<String> generateSqlStatementsForTable(NamedParameterJdbcTemplate jdbc,
                                                String tableName,
-                                               String dateColumnName,
                                                Date startDate,
                                                Date endDate,
                                                ScriptType scriptType) throws Exception;
 
-    void loadData(GenericDao genericDao, List<String> statements);
+    void loadData(NamedParameterJdbcTemplate jdbc, List<String> statements);
 }

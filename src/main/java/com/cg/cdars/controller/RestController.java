@@ -1,12 +1,13 @@
 package com.cg.cdars.controller;
 
-import com.cg.cdars.dao.GenericDao;
-import com.cg.cdars.domain.ArchiveRecord;
-import com.cg.cdars.domain.DataSet;
-import com.cg.cdars.domain.ScriptType;
+import com.cg.cdars.model.ArchivedRecord;
+import com.cg.cdars.model.DataSet;
+import com.cg.cdars.model.DataSetType;
+import com.cg.cdars.model.ScriptType;
 import com.cg.cdars.service.ArchivalService;
 import com.cg.cdars.service.DataExtractionService;
 import com.cg.cdars.service.FileSystemService;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -17,11 +18,11 @@ public class RestController {
     private DataExtractionService dataExtractionService;
     private ArchivalService archivalService;
 
-    private GenericDao defaultDao;
+    private NamedParameterJdbcTemplate defaultJdbc;
     private DateFormat dateFormat;
 
     void archive(String dataSetType, String startDate, String endDate, String scriptType) throws Exception {
-        List<String> insertStatements = dataExtractionService.generateSqlStatementsForDataSet(defaultDao, DataSet.DataSetType.valueOf(dataSetType),
+        List<String> insertStatements = dataExtractionService.generateSqlStatementsForDataSet(defaultJdbc, DataSetType.valueOf(dataSetType),
                 dateFormat.parse(startDate), dateFormat.parse(endDate), ScriptType.valueOf(scriptType));
 
         File outputFile = fileSystemService.storeToFile(insertStatements);
@@ -34,14 +35,14 @@ public class RestController {
     void retrieve(String archivalRecordId) throws Exception {
         File file = archivalService.retrieve(archivalRecordId);
         List<String> lines = fileSystemService.getLines(file);
-        dataExtractionService.loadData(defaultDao, lines);
+        dataExtractionService.loadData(defaultJdbc, lines);
     }
 
     List<DataSet> getDataSets() {
         return null;
     }
 
-    List<ArchiveRecord> getArchiveRecords(String dataSet, String startDate, String endDate) {
+    List<ArchivedRecord> getArchiveRecords(String dataSet, String startDate, String endDate) {
         return null;
     }
 }
