@@ -36,11 +36,10 @@ public class ArchivalServiceImpl implements ArchivalService {
         AmazonS3 s3client = new AmazonS3Client(getAWSCredentials());
         s3client.setRegion(Region.getRegion(AP_SOUTH_1));
 
-        String key = FOLDER_NAME + PATH_SEPARATOR + target.getName();
-        s3client.putObject(new PutObjectRequest(BUCKET_NAME, key, target)
+        s3client.putObject(new PutObjectRequest(BUCKET_NAME, FOLDER_NAME + PATH_SEPARATOR + target.getName(), target)
                 .withCannedAcl(PublicRead));
 
-        return key;
+        return target.getName();
     }
 
     @Override
