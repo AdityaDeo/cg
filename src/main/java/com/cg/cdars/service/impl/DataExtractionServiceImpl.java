@@ -49,7 +49,7 @@ public class DataExtractionServiceImpl implements DataExtractionService {
         return dataSet.getTables().stream()
                 .map(table -> {
                     try {
-                        return generateSqlStatementsForTable(jdbc, table, startDate, endDate, DDL);
+                        return generateSqlStatementsForTable(jdbc, table, startDate, endDate, scriptType);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return Collections.<String>emptyList();
