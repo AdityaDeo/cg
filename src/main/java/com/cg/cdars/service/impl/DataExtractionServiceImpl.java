@@ -17,6 +17,7 @@ import java.util.function.Function;
 import static com.cg.cdars.model.ScriptType.DDL;
 import static com.cg.cdars.model.SqlDataTypes.*;
 import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -93,7 +94,6 @@ public class DataExtractionServiceImpl implements DataExtractionService {
         return rows.stream().map(m -> format(template, getInsertStatementValuesForRow(columns, m))).collect(toList());
     }
 
-
     private String getInsertStatementTemplate(String tableName, List<String> columnNames) {
         return new StringBuilder()
                 .append("insert into ")
@@ -137,7 +137,7 @@ public class DataExtractionServiceImpl implements DataExtractionService {
 
     @Override
     public void loadData(NamedParameterJdbcTemplate jdbc, List<String> statements) {
-
+        statements.forEach(sql -> jdbc.update(sql, emptyMap()));
     }
 
     public void setTableInformationDao(TableInformationDao tableInformationDao) {

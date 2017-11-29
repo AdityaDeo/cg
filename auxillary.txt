@@ -1,0 +1,104 @@
+Install ojdbc
+	mvn install:install-file -Dfile=C:\oraclexe\app\oracle\product\11.2.0\server\jdbc\lib\ojdbc6.jar -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0 -Dpackaging=jar
+	
+create user	
+	CREATE USER DEV1 IDENTIFIED BY 1234;
+	GRANT CONNECT TO DEV1;
+	GRANT CONNECT, RESOURCE, DBA TO DEV1;
+	GRANT CREATE SESSION TO DEV1;
+	GRANT UNLIMITED TABLESPACE TO DEV1;
+	GRANT SELECT, INSERT, UPDATE, DELETE ON schema.books TO DEV1;
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+drop table datasets;
+create table datasets (datasetname varchar2(1024), datasettype varchar(32));
+
+insert into DataSets values ('DataSet1', 'TRADE');
+insert into DataSets values ('DataSet2', 'ALL');
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+drop table datasetXtables;
+create table datasetXtables (datasetname varchar2(1024), tablename varchar2(1024));
+
+insert into DataSetXTables values ('DataSet1', 'trades');
+insert into DataSetXTables values ('DataSet1', 'agreements');
+insert into DataSetXTables values ('DataSet1', 'products');
+insert into DataSetXTables values ('DataSet2', 'trades');
+insert into DataSetXTables values ('DataSet2', 'agreements');
+insert into DataSetXTables values ('DataSet2', 'products');
+insert into DataSetXTables values ('DataSet2', 'margincalls');	
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+drop table tableinformation;
+create table tableinformation (tablename varchar2(1024), key varchar(1024), value varchar2(1024));
+
+insert into tableinformation values ('trades', 'datecolumn', 'startdate');
+insert into tableinformation values ('agreements', 'datecolumn', 'signaturedate');
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+drop table archivedrecords;
+create table archivedrecords (datasetname varchar2(1024), startdate date, enddate date, archivesystemid varchar2(1024), filefullname varchar2(2048), scripttype varchar2(3), createdby varchar2(1024), creationtime date);
+
+insert into archivedrecords values ('DataSet1', '01-JAN-2014', '31-DEC-2014', 'AWS-1', 'sample/file/path', 'DDL', 'USER-1', sysdate);
+insert into archivedrecords values ('DataSet1', '01-JAN-2015', '31-DEC-2015', 'AWS-2', 'sample/file/path', 'DDL', 'USER-1', sysdate);
+insert into archivedrecords values ('DataSet1', '01-JAN-2016', '31-DEC-2016', 'AWS-3', 'sample/file/path', 'DDL', 'USER-1', sysdate);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+drop table agreements;
+create table agreements (agreementname varchar2(1024), counterparty varchar(1024), signaturedate date);
+alter table agreements add constraint pk_agreement primary key (agreementname);
+
+insert into agreements(agreementname, counterparty, signaturedate) values ('Agreement1', 'Cpty1', sysdate - 10);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+drop table products;
+create table products (productname varchar2(1024), type varchar(1024), description varchar2(1024));
+alter table products add constraint pk_product primary key (productname);
+
+insert into products (productname, type, description) values ('Product1', 'Forward', 'Fx rate forward');
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+drop table trades;
+create table trades (tradeid varchar2(1024), agreementname varchar(1024), productname varchar2(1024), startdate date, enddate date, value number, ccy varchar2(3));
+alter table trades add constraint fk_agreement foreign key (agreementname) references agreements(agreementname);
+alter table trades add constraint fk_product foreign key (productname) references products(productname);	
+
+set serveroutput on;
+declare 
+    i number;
+begin
+    i := 0;
+    
+    delete from trades;
+    
+    while i < 1001
+    loop
+        dbms_output.put_line(i);
+        
+        insert into trades (
+                tradeid, agreementname, productname, 
+                startdate, enddate, value, 
+                ccy
+        ) values (
+                'Trade' || i, 'Agreement1', 'Product1', 
+                sysdate -i, sysdate, 100000 * i, 
+                'EUR');
+        
+        i := i + 1;
+    end loop;
+    
+    commit;
+end;
+/
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	
