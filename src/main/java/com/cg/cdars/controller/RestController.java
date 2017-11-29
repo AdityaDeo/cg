@@ -32,7 +32,7 @@ public class RestController {
     }
 
     void retrieve(String archivalRecordId) throws Exception {
-        File file = archivalService.retrieve(archivalRecordId);
+        File file = archivalService.retrieve("", archivalRecordId);
         List<String> lines = fileSystemService.getLines(file);
         dataExtractionService.loadData(defaultJdbc, lines);
     }

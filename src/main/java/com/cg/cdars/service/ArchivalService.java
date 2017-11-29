@@ -3,6 +3,6 @@ package com.cg.cdars.service;
 import java.io.File;
 
 public interface ArchivalService {
-    void archive(File target) throws Exception;
-    File retrieve(String archiveRecordId) throws Exception;
+    String archive(File target) throws Exception;
+    File retrieve(String fileName, String archiveRecordId) throws Exception;
 }

@@ -42,7 +42,7 @@ insert into tableinformation values ('agreements', 'datecolumn', 'signaturedate'
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 drop table archivedrecords;
-create table archivedrecords (datasetname varchar2(1024), startdate date, enddate date, archivesystemid varchar2(1024), filefullname varchar2(2048), scripttype varchar2(3), createdby varchar2(1024), creationtime date);
+create table archivedrecords (datasetname varchar2(1024), startdate date, enddate date, archivesystemid varchar2(1024), filefullname varchar2(2048), scripttype varchar2(3), createdby varchar2(1024) default 'AUTO', creationtime date default sysdate);
 
 insert into archivedrecords values ('DataSet1', '01-JAN-2014', '31-DEC-2014', 'AWS-1', 'sample/file/path', 'DDL', 'USER-1', sysdate);
 insert into archivedrecords values ('DataSet1', '01-JAN-2015', '31-DEC-2015', 'AWS-2', 'sample/file/path', 'DDL', 'USER-1', sysdate);

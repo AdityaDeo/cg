@@ -1,5 +1,6 @@
 package com.cg.cdars.dao;
 
+import com.cg.cdars.dao.impl.ArchivedRecordDaoImpl;
 import com.cg.cdars.dao.impl.DataSetDaoImpl;
 import com.cg.cdars.dao.impl.TableInformationDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,14 @@ public class DaoConfig {
     @Autowired
     public DataSetDao getDataSetDao(NamedParameterJdbcTemplate jdbc) {
         DataSetDaoImpl dao = new DataSetDaoImpl();
+        dao.setJdbc(jdbc);
+        return dao;
+    }
+
+    @Bean
+    @Autowired
+    public ArchivedRecordDao getArchivedRecordDao(NamedParameterJdbcTemplate jdbc) {
+        ArchivedRecordDaoImpl dao = new ArchivedRecordDaoImpl();
         dao.setJdbc(jdbc);
         return dao;
     }
