@@ -102,4 +102,5 @@ end;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 http://localhost:8090/archiveDataSet/DataSet1/01-11-2017/30-11-2017/DML
-http://localhost:8090/retrieveDataSet/DataSetArchive_29-11-2017_16_27_34_6290898007221314313	
+http://localhost:8090/retrieveDataSet/DataSetArchive_29-11-2017_16_27_34_6290898007221314313
+http://localhost:8090/getDataSet

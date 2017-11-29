@@ -1,7 +1,9 @@
 package com.cg.cdars.controller;
 
 import com.cg.cdars.dao.ArchivedRecordDao;
+import com.cg.cdars.dao.DataSetDao;
 import com.cg.cdars.model.ArchivedRecord;
+import com.cg.cdars.model.DataSet;
 import com.cg.cdars.model.ScriptType;
 import com.cg.cdars.service.ArchivalService;
 import com.cg.cdars.service.DataExtractionService;
@@ -38,16 +40,19 @@ public class CdarsController {
     private ArchivedRecordDao archivedRecordDao;
 
     @Autowired
+    private DataSetDao dataSetDao;
+
+    @Autowired
     private NamedParameterJdbcTemplate jdbc;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     @RequestMapping("/archiveDataSet/{dataSetName}/{strStartDate}/{strEndDate}/{strScriptType}")
     @ResponseBody
-    public ArchivedRecord archiveDataSet(@PathVariable("dataSetName") String dataSetName,
-                               @PathVariable("strStartDate") String strStartDate,
-                               @PathVariable("strEndDate") String strEndDate,
-                               @PathVariable("strScriptType") String strScriptType) throws Exception {
+    public ArchivedRecord archiveDataSet(@PathVariable String dataSetName,
+                               @PathVariable String strStartDate,
+                               @PathVariable String strEndDate,
+                               @PathVariable String strScriptType) throws Exception {
 
         Date startDate = simpleDateFormat.parse(strStartDate);
         Date endDate = simpleDateFormat.parse(strEndDate);
@@ -77,10 +82,22 @@ public class CdarsController {
 
     @RequestMapping("/retrieveDataSet/{archiveSystemId}")
     @ResponseBody
-    public File retrieveDataSet(@PathVariable("archiveSystemId") String archiveSystemId) throws Exception {
+    public File retrieveDataSet(@PathVariable String archiveSystemId) throws Exception {
         File retrievedFile = archivalService.retrieve(archiveSystemId);
         List<String> statements = fileSystemService.getLines(retrievedFile);
         dataExtractionService.loadData(jdbc, statements);
         return retrievedFile;
+    }
+
+    @RequestMapping("/getDataSet")
+    @ResponseBody
+    public List<DataSet> getDataSets() {
+        return dataSetDao.getDataSets();
+    }
+
+    @RequestMapping("/getArchivedRecords")
+    @ResponseBody
+    public List<ArchivedRecord> getArchivedRecords() {
+        return archivedRecordDao.getArchiveRecords();
     }
 }
