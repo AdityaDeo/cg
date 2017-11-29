@@ -4,6 +4,7 @@ import com.cg.cdars.dao.TableInformationDao;
 import com.cg.cdars.model.SqlDataTypes;
 import com.cg.cdars.model.TableInformation;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -22,9 +23,13 @@ public class TableInformationDaoImpl implements TableInformationDao {
     }
 
     public String getDateColumnName(String tableName) {
-        return jdbc.queryForObject("select value from tableinformation where key = 'datecolumn' and lower(tableName) = lower(:tableName)",
-                singletonMap("tableName", tableName),
-                String.class);
+        try {
+            return jdbc.queryForObject("select value from tableinformation where key = 'datecolumn' and lower(tableName) = lower(:tableName)",
+                    singletonMap("tableName", tableName),
+                    String.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public Map<String, SqlDataTypes> getTableColumns(String tableName) {

@@ -1,6 +1,5 @@
 package com.cg.cdars.service;
 
-import com.cg.cdars.model.DataSetType;
 import com.cg.cdars.model.ScriptType;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -9,7 +8,7 @@ import java.util.List;
 
 public interface DataExtractionService {
     List<String> generateSqlStatementsForDataSet(NamedParameterJdbcTemplate jdbc,
-                                                 DataSetType dataSetName,
+                                                 String dataSetName,
                                                  Date startDate,
                                                  Date endDate,
                                                  ScriptType scriptType) throws Exception;

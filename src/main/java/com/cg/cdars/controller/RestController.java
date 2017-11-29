@@ -2,7 +2,6 @@ package com.cg.cdars.controller;
 
 import com.cg.cdars.model.ArchivedRecord;
 import com.cg.cdars.model.DataSet;
-import com.cg.cdars.model.DataSetType;
 import com.cg.cdars.model.ScriptType;
 import com.cg.cdars.service.ArchivalService;
 import com.cg.cdars.service.DataExtractionService;
@@ -21,11 +20,11 @@ public class RestController {
     private NamedParameterJdbcTemplate defaultJdbc;
     private DateFormat dateFormat;
 
-    void archive(String dataSetType, String startDate, String endDate, String scriptType) throws Exception {
-        List<String> insertStatements = dataExtractionService.generateSqlStatementsForDataSet(defaultJdbc, DataSetType.valueOf(dataSetType),
+    void archive(String dataSetName, String startDate, String endDate, String scriptType) throws Exception {
+        List<String> insertStatements = dataExtractionService.generateSqlStatementsForDataSet(defaultJdbc, dataSetName,
                 dateFormat.parse(startDate), dateFormat.parse(endDate), ScriptType.valueOf(scriptType));
 
-        File outputFile = fileSystemService.storeToFile(insertStatements);
+        File outputFile = fileSystemService.storeToFile("", insertStatements);
 
         archivalService.archive(outputFile);
 

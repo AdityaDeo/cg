@@ -1,8 +1,8 @@
 package com.cg.cdars.service.impl;
 
+import com.cg.cdars.dao.DataSetDao;
 import com.cg.cdars.dao.TableInformationDao;
 import com.cg.cdars.model.DataSet;
-import com.cg.cdars.model.DataSetType;
 import com.cg.cdars.model.ScriptType;
 import com.cg.cdars.model.SqlDataTypes;
 import com.cg.cdars.service.DataExtractionService;
@@ -26,6 +26,7 @@ public class DataExtractionServiceImpl implements DataExtractionService {
     private final String DATE_PATTERN = "dd-MM-yyyy";
     private final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_PATTERN);
     private TableInformationDao tableInformationDao;
+    private DataSetDao dataSetDao;
 
     public DataExtractionServiceImpl() {
         SQL_VALUE_LITERAL_GENERATORS.put(VARCHAR2, o -> "'" + o + "'");
@@ -35,11 +36,25 @@ public class DataExtractionServiceImpl implements DataExtractionService {
 
     @Override
     public List<String> generateSqlStatementsForDataSet(NamedParameterJdbcTemplate jdbc,
-                                                        DataSetType dataSetName,
+                                                        String dataSetName,
                                                         Date startDate,
                                                         Date endDate,
                                                         ScriptType scriptType) throws Exception {
-        return null;
+
+        DataSet dataSet = dataSetDao.getDataSets().stream()
+                .filter(ds -> ds.getDatasetName().equals(dataSetName))
+                .findFirst().get();
+
+        return dataSet.getTables().stream()
+                .map(table -> {
+                    try {
+                        return generateSqlStatementsForTable(jdbc, table, startDate, endDate, DDL);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Collections.<String>emptyList();
+                    }})
+                .flatMap(List::stream)
+                .collect(toList());
     }
 
     @Override
@@ -94,22 +109,24 @@ public class DataExtractionServiceImpl implements DataExtractionService {
                                                     String dateColumnName,
                                                     Date startDate,
                                                     Date endDate) {
-        String sqlText = new StringBuilder()
-                .append(" select * from ")
-                .append(tableName)
-                .append(" where ")
-                .append(dateColumnName)
-                .append(" <= :endDate")
-                .append(" and ")
-                .append(dateColumnName)
-                .append(" >= :startDate ")
-                .toString();
+        StringBuilder sb = new StringBuilder()
+            .append(" select * from ")
+            .append(tableName);
+
+        if (dateColumnName != null) {
+            sb.append(" where ")
+                    .append(dateColumnName)
+                    .append(" <= :endDate")
+                    .append(" and ")
+                    .append(dateColumnName)
+                    .append(" >= :startDate ");
+        }
 
         Map<String, Date> params = new HashMap();
         params.put("startDate", startDate);
         params.put("endDate", endDate);
 
-        return jdbc.query(sqlText, params, new ColumnMapRowMapper());
+        return jdbc.query(sb.toString(), params, new ColumnMapRowMapper());
     }
 
     private String getInsertStatementValuesForRow(Map<String, SqlDataTypes> columnDefinitions, Map<String, Object> row) {
@@ -125,5 +142,9 @@ public class DataExtractionServiceImpl implements DataExtractionService {
 
     public void setTableInformationDao(TableInformationDao tableInformationDao) {
         this.tableInformationDao = tableInformationDao;
+    }
+
+    public void setDataSetDao(DataSetDao dataSetDao) {
+        this.dataSetDao = dataSetDao;
     }
 }

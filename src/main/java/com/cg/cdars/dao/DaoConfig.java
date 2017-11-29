@@ -1,6 +1,6 @@
 package com.cg.cdars.dao;
 
-import com.cg.cdars.dao.impl.BeanDaoImpl;
+import com.cg.cdars.dao.impl.DataSetDaoImpl;
 import com.cg.cdars.dao.impl.TableInformationDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,8 +12,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @PropertySource("classpath:datasource.properties")
@@ -50,6 +48,14 @@ public class DaoConfig {
     @Autowired
     public TableInformationDao getTableInformationDao(NamedParameterJdbcTemplate jdbc) {
         TableInformationDaoImpl dao = new TableInformationDaoImpl();
+        dao.setJdbc(jdbc);
+        return dao;
+    }
+
+    @Bean
+    @Autowired
+    public DataSetDao getDataSetDao(NamedParameterJdbcTemplate jdbc) {
+        DataSetDaoImpl dao = new DataSetDaoImpl();
         dao.setJdbc(jdbc);
         return dao;
     }
